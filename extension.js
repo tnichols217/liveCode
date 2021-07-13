@@ -7,14 +7,16 @@ const vscode = require('vscode');
 
 class TreeData {
     constructor(Tree) {
-        this.tree = Tree
+        this.children = Array.from(Tree, (x) => {
+            return new TreeItem(x)
+        })
         this._onDidChangeTreeData = (new vscode.EventEmitter())
         this.onDidChangeTreeData = this._onDidChangeTreeData.event
     }
 
     getChildren(a) {
         if (a == undefined) {
-            return this.tree
+            return this.children
         }
         return a.children
     }
@@ -29,105 +31,124 @@ class TreeData {
     refresh() {
         this._onDidChangeTreeData.fire(undefined)
     }
+
+    addChild(child) {
+        this.children.push(new TreeItem(child))
+    }
+
+    addTreeItemChild(child) {
+        this.children.push(child)
+    }
 }
 
 class TreeItem {
-	constructor(Tree) {
-		this.name = Tree.name
-		this.children = Tree.children
-	}
-	
-}
+    constructor(Tree) {
+        this.name = Tree.name
+        this.children = []
+        if (Tree.hasOwnProperty("children")) {
+            this.children = Array.from(Tree.children, x => new TreeItem(x))
+        }
+    }
 
-var tree = {
-    server: [
-        {
-            "name": "test1",
-            "children": [
-                {
-                    "name": "test1.1"
-                }
-            ]
-        }, {
-            "name": "test2"
-        }
-    ],
-    pages: [
-        {
-            "name": "test1",
-            "children": [
-                {
-                    "name": "test1.1"
-                }
-            ]
-        }, {
-            "name": "test2"
-        }
-    ],
-    current: [
-        {
-            "name": "test1",
-            "children": [
-                {
-                    "name": "test1.1"
-                }
-            ]
-        }, {
-            "name": "test2"
-        }
-    ],
-    users: [
-        {
-            "name": "test1",
-            "children": [
-                {
-                    "name": "test1.1"
-                }
-            ]
-        }, {
-            "name": "test2"
-        }
-    ]
-}
+    addChild(child) {
+        this.children.push(new TreeItem(child))
+    }
 
+    addTreeItemChild(child) {
+        this.children.push(child)
+    }
+
+
+}
 
 var panels = {
-    server: new TreeData(tree.server),
-    pages: new TreeData(tree.pages),
-    current: new TreeData(tree.current),
-    users: new TreeData(tree.users)
+    server: new TreeData(
+        [
+            {
+                "name": "test1",
+                "children": [
+                    {
+                        "name": "test1.1"
+                    }
+                ]
+            }, {
+                "name": "test2"
+            }
+        ]
+    ),
+    pages: new TreeData(
+        [
+            {
+                "name": "test1",
+                "children": [
+                    {
+                        "name": "test1.1"
+                    }
+                ]
+            }, {
+                "name": "test2"
+            }
+        ]
+    ),
+    current: new TreeData(
+        [
+            {
+                "name": "test1",
+                "children": [
+                    {
+                        "name": "test1.1"
+                    }
+                ]
+            }, {
+                "name": "test2"
+            }
+        ]
+    ),
+    users: new TreeData(
+        [
+            {
+                "name": "test1",
+                "children": [
+                    {
+                        "name": "test1.1"
+                    }
+                ]
+            }, {
+                "name": "test2"
+            }
+        ]
+    )
 }
 
 function activate(context) {
     context.subscriptions.push(vscode.commands.registerCommand('livecode.helloWorld', function () {
-        vscode.window.showInformationMessage('Hello World from livecode!')
-        tree.server.push({"name": "appended thing", "children": []})
+        panels.server.addChild({"name": "appended thing", "children": []})
+        panels.server.refresh()
     }))
 
 
     context.subscriptions.push(vscode.commands.registerCommand("livecode.serverRefresh", () => {
         panels.server.refresh()
     }))
-    context.subscriptions.push(vscode.window.registerTreeDataProvider("livecode.server", panels.server))
+    context.subscriptions.push(vscode.window.createTreeView("livecode.server", {treeDataProvider: panels.server}))
 
 
     context.subscriptions.push(vscode.commands.registerCommand("livecode.pagesRefresh", () => {
         panels.server.refresh()
     }))
-    context.subscriptions.push(vscode.window.registerTreeDataProvider("livecode.pages", panels.pages))
+    context.subscriptions.push(vscode.window.createTreeView("livecode.pages", {treeDataProvider: panels.pages}))
 
 
     context.subscriptions.push(vscode.commands.registerCommand("livecode.currentRefresh", () => {
         panels.server.refresh()
     }))
-    context.subscriptions.push(vscode.window.registerTreeDataProvider("livecode.current", panels.current))
+    context.subscriptions.push(vscode.window.createTreeView("livecode.current", {treeDataProvider: panels.current}))
 
 
     context.subscriptions.push(vscode.commands.registerCommand("livecode.usersRefresh", () => {
         panels.server.refresh()
     }))
-    context.subscriptions.push(vscode.window.registerTreeDataProvider("livecode.users", panels.users))
-
+    context.subscriptions.push(vscode.window.createTreeView("livecode.users", {treeDataProvider: panels.users}))
 }
 
 
