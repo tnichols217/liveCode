@@ -1,36 +1,139 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
-
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 
 /**
  * @param {vscode.ExtensionContext} context
  */
-function activate(context) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "livecode" is now active!');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('livecode.helloWorld', function () {
-		// The code you place here will be executed every time your command is executed
+class TreeData {
+    constructor(Tree) {
+        this.tree = Tree
+        this._onDidChangeTreeData = (new vscode.EventEmitter())
+        this.onDidChangeTreeData = this._onDidChangeTreeData.event
+    }
 
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from livecode!');
-	});
+    getChildren(a) {
+        if (a == undefined) {
+            return this.tree
+        }
+        return a.children
+    }
 
-	context.subscriptions.push(disposable);
+    getTreeItem(child) {
+        if (!child.hasOwnProperty("children") || child.children.length == 0) {
+            return new vscode.TreeItem(child.name, vscode.TreeItemCollapsibleState.None)
+        }
+        return new vscode.TreeItem(child.name, vscode.TreeItemCollapsibleState.Collapsed)
+    }
+
+    refresh() {
+        this._onDidChangeTreeData.fire(undefined)
+    }
 }
 
-// this method is called when your extension is deactivated
+class TreeItem {
+	constructor(Tree) {
+		this.name = Tree.name
+		this.children = Tree.children
+	}
+	
+}
+
+var tree = {
+    server: [
+        {
+            "name": "test1",
+            "children": [
+                {
+                    "name": "test1.1"
+                }
+            ]
+        }, {
+            "name": "test2"
+        }
+    ],
+    pages: [
+        {
+            "name": "test1",
+            "children": [
+                {
+                    "name": "test1.1"
+                }
+            ]
+        }, {
+            "name": "test2"
+        }
+    ],
+    current: [
+        {
+            "name": "test1",
+            "children": [
+                {
+                    "name": "test1.1"
+                }
+            ]
+        }, {
+            "name": "test2"
+        }
+    ],
+    users: [
+        {
+            "name": "test1",
+            "children": [
+                {
+                    "name": "test1.1"
+                }
+            ]
+        }, {
+            "name": "test2"
+        }
+    ]
+}
+
+
+var panels = {
+    server: new TreeData(tree.server),
+    pages: new TreeData(tree.pages),
+    current: new TreeData(tree.current),
+    users: new TreeData(tree.users)
+}
+
+function activate(context) {
+    context.subscriptions.push(vscode.commands.registerCommand('livecode.helloWorld', function () {
+        vscode.window.showInformationMessage('Hello World from livecode!')
+        tree.server.push({"name": "appended thing", "children": []})
+    }))
+
+
+    context.subscriptions.push(vscode.commands.registerCommand("livecode.serverRefresh", () => {
+        panels.server.refresh()
+    }))
+    context.subscriptions.push(vscode.window.registerTreeDataProvider("livecode.server", panels.server))
+
+
+    context.subscriptions.push(vscode.commands.registerCommand("livecode.pagesRefresh", () => {
+        panels.server.refresh()
+    }))
+    context.subscriptions.push(vscode.window.registerTreeDataProvider("livecode.pages", panels.pages))
+
+
+    context.subscriptions.push(vscode.commands.registerCommand("livecode.currentRefresh", () => {
+        panels.server.refresh()
+    }))
+    context.subscriptions.push(vscode.window.registerTreeDataProvider("livecode.current", panels.current))
+
+
+    context.subscriptions.push(vscode.commands.registerCommand("livecode.usersRefresh", () => {
+        panels.server.refresh()
+    }))
+    context.subscriptions.push(vscode.window.registerTreeDataProvider("livecode.users", panels.users))
+
+}
+
+
 function deactivate() {}
 
 module.exports = {
-	activate,
-	deactivate
+    activate,
+    deactivate
 }
