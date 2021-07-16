@@ -130,23 +130,13 @@
 					"command": "livecode.server.removeItem",
 					"when": "view == livecode.server",
 					"group": "inline"
+				},
+				{
+					"command": "livecode.server.connect",
+					"when": "view == livecode.server",
+					"group": "inline"
 				}
 			]
-		},
-		"configuration": {
-			"title": "livecode",
-			"properties": {
-				"livecode.server.servers": {
-					"type": "array",
-					"default": [
-						{
-							"name": "Home",
-							"location": "192.168.100.200"
-						}
-					],
-					"description": "List of livecode servers"
-				}
-			}
 		}
 	},
 	"scripts": {
@@ -167,10 +157,13 @@
 	},
 	"dependencies": {
 		"diff_match_patch": "^0.1.1",
-		"nodegit": "^0.27.0",
+		"fs": "^0.0.1-security",
 		"peerjs": "^1.3.2",
 		"peerjs-server": "^0.2.9",
+		"simple-peer": "^9.11.0",
 		"socket.io": "^4.1.3",
-		"uuid": "^8.3.2"
+		"socket.io-client": "^4.1.3",
+		"uuid": "^8.3.2",
+		"webrtc": "^1.14.1"
 	}
 }
