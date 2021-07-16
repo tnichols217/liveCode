@@ -3,7 +3,8 @@ const socket = require("socket.io")
 const io = require("socket.io-client")
 var client
 const diff = require("diff_match_patch");
-
+const git = require("nodegit")
+const textFile = vscode.window.activeTextEditor
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -140,8 +141,10 @@ function activate(context) {
 	context.subscriptions.push(vscode.window.createTreeView("livecode.currentServer", {treeDataProvider: panels.currentServer}))
 
     context.subscriptions.push(vscode.commands.registerCommand("livecode.server.connect", (serv) => {
-        client = io.io(serv.address)
+        // client = io.io(serv.address)
         client = io.io("http://localhost:4000")
+        var location = git()
+
     }))
 
 	//server panel
