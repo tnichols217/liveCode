@@ -69,7 +69,7 @@
 				{
 					"id": "livecode",
 					"title": "livecode",
-					"icon": "resources/icon.svg"
+					"icon": "resources/icon24x.svg"
 				}
 			]
 		},
@@ -158,12 +158,14 @@
 	"dependencies": {
 		"diff_match_patch": "^0.1.1",
 		"fs": "^0.0.1-security",
+		"node-pre-gyp": "^0.17.0",
 		"peerjs": "^1.3.2",
 		"peerjs-server": "^0.2.9",
 		"simple-peer": "^9.11.0",
 		"socket.io": "^4.1.3",
 		"socket.io-client": "^4.1.3",
 		"uuid": "^8.3.2",
-		"webrtc": "^1.14.1"
+		"webrtc": "^1.14.1",
+		"wrtc": "^0.4.7"
 	}
 }

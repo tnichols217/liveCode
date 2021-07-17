@@ -6,6 +6,9 @@ class TreeItem {
         if (Tree.hasOwnProperty("children")) {
             this.children = Array.from(Tree.children, x => new TreeItem(x, this))
         }
+        if (Tree.hasOwnProperty("icon")) {
+            this.icon = Tree.icon
+        }
     }
 
     addChild(child) {

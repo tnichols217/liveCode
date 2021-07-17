@@ -19,9 +19,7 @@ class TreeData {
             }
             this.children = Array.from(context.globalState[this.globalStateString], x => new TreeItem(x, this))
         } else {
-            this.children = Array.from(Tree, (x) => {
-                return new TreeItem(x)
-            })
+            this.children = Array.from(Tree, x => new TreeItem(x, this))
         }
     }
 
@@ -33,10 +31,16 @@ class TreeData {
     }
 
     getTreeItem(child) {
+        var out
         if (!child.hasOwnProperty("children") || child.children.length == 0) {
-            return new vscode.TreeItem(child.name, vscode.TreeItemCollapsibleState.None)
+            out = new vscode.TreeItem(child.name, vscode.TreeItemCollapsibleState.None)
+        } else {
+            out = new vscode.TreeItem(child.name, vscode.TreeItemCollapsibleState.Collapsed)
         }
-        return new vscode.TreeItem(child.name, vscode.TreeItemCollapsibleState.Collapsed)
+        if (child.hasOwnProperty("icon")) {
+            out["iconPath"] = child.icon
+        }
+        return out
     }
 
     refresh() {

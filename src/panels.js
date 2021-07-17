@@ -1,4 +1,5 @@
 const TreeData = require('./TreeData');
+const path = require('path')
 var panels = {
     currentServer: new TreeData.TreeData("currentServer", []),
     pages: new TreeData.TreeData("pages", [
@@ -18,7 +19,12 @@ var panels = {
             "name": "test1",
             "children": [
                 {
-                    "name": "test1.1"
+                    "name": "test1.1",
+                    "children": [
+                        {
+                            "name" : "test1.1.1"
+                        }
+                    ]
                 }
             ]
         }, {
@@ -31,7 +37,8 @@ var panels = {
             "name": "test1",
             "children": [
                 {
-                    "name": "test1.1"
+                    "name": "test1.1",
+                    "icon": path.join(__filename, '..', '..', 'resources', 'icon16x.svg')
                 }
             ]
         }, {
