@@ -1,12 +1,9 @@
 const vscode = require('vscode')
-const io = require("socket.io-client")
 // const diff = require("diff_match_patch")
 const TreeData = require("./src/TreeData.js")
 const panels = require("./src/panels.js")
 const git = require("./src/Git.js")
-const Peer = require("simple-peer")
-
-var wrtc = require('wrtc')
+const Socket = require("./src/Socket.js")
 
 var connections = {}
 
@@ -76,28 +73,13 @@ function activate(context) {
 
 	//connect server command
 	context.subscriptions.push(vscode.commands.registerCommand("livecode.server.connect", async (serv) => {
-		// socketClient = io.io(serv.address)
-		if (vscode.window.activeTextEditor) {
-			var dir = await git.getGitDir(vscode.window.activeTextEditor.document.fileName)
-			connections[dir] = {editor: vscode.window.activeTextEditor, socket: io.io("http://localhost:4000"), isPeerServer: false, connections: []}
+		var editor = vscode.window.activeTextEditor
+		if (editor) {
+			var dir = await git.getGitDir(editor.document.fileName)
+			connections[dir] = new Socket.socketClient("http://localhost:4000", dir, editor)
+			// connections[dir] = new Socket.socketClient(serv.address, dir, editor)
 			connections[dir].socket.emit("requestDocument", dir)
-			
-			connections[dir].socket.on("documentAddress", (data) => {
-				if (data == undefined) {
-					connections[dir].socket.emit("requestStartDocument", dir)
-				}
-			})
-			connections[dir].socket.on("startDocument", (data) => {
-				if (data == true) {
-					connections[dir].isPeerServer = true
-					connections[dir].peer = new Peer({initiator: true, trickle: false, wrtc: wrtc})
-					connections[dir].peer.on("signal", (data) => {
-						connections[dir].socket.emit("peerID", JSON.stringify(data))
-					})
-				} else {
-					connections[dir].socket.emit("requestDocument", dir)
-				}
-			})
+			console.log("requesting doc", dir)
 		}
 	}))
 
