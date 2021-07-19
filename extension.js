@@ -72,6 +72,7 @@ function activate(context) {
 	context.subscriptions.push(vscode.commands.registerCommand("livecode.server.connect", async (serv) => {
 		var editor = vscode.window.activeTextEditor
 		if (editor) {
+			// console.log(editor.document.getText())
 			var dir = await git.getGitDir(editor.document.fileName)
 			connections[dir] = new Socket.socketClient("http://localhost:4000", dir, editor)
 			// connections[dir] = new Socket.socketClient(serv.address, dir, editor)

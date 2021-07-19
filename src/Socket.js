@@ -11,7 +11,7 @@ class socketClient{
         this.client = undefined
         this.socket = io.io(addr)
         this.socket.on("documentAddress", (otherSignal) => {
-            console.log("got doc", otherSignal)
+            console.log("got doc")
             if (otherSignal == undefined) {
                 this.socket.emit("requestStartDocument", this.dir)
                 console.log("requesting to start doc", this.dir)

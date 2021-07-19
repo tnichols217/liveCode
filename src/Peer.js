@@ -14,17 +14,21 @@ class peerClient {
         this.peer.signal(signal)
         this.peer.on("signal", (thisSignal) => {
             this.socket.emit("joinDocument", {dir: this.dir, clientSignal: thisSignal})
-            console.log("joining doc", dir, thisSignal)
+            console.log("joining doc", dir)
+        })
+        this.peer.on("connect", () => {
+            console.log("connected to server")
         })
     }
 }
+
 class peerServerInstance {
     constructor() {
         this.peer = new Peer({initiator: true, trickle: false, wrtc: wrtc})
         this.signal = undefined
         this.types = {}
         this.peer.on("connect", () => {
-            this.peer.send
+            console.log("connected to client")
         })
         this.peer.on("data", (data) => {
             if (data.hasOwnProperty("type")) {
@@ -71,13 +75,14 @@ class peerServer {
         newClient.peer.on("signal", (thisSignal) => {
             newClient.signal = thisSignal
             this.socket.emit("generatedSignal", thisSignal)
-            console.log("sending signal", thisSignal)
+            console.log("sending signal")
         })
         this.clients.push(newClient)
     }
 
     connectClient(otherSignal) {
-        this.clients[this.clients.length - 1].signal(otherSignal)
+        console.log(this.clients)
+        this.clients[this.clients.length - 1].peer.signal(otherSignal)
     }
 
     send(type, data) {
@@ -106,7 +111,6 @@ class peerServer {
         console.log(this.string, patch.id)
     }
 }
-
 
 module.exports = {
     peerClient,
