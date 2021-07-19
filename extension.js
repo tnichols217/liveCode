@@ -13,9 +13,6 @@ var connections = {}
  */
 
 
-
-var temp
-
 function activate(context) {
 
 	//temp tests
