@@ -16,7 +16,10 @@ class socketClient{
                 this.socket.emit("requestStartDocument", this.dir)
                 console.log("requesting to start doc", this.dir)
             } else {
-                this.client = new Peer.peerClient(otherSignal, this.socket, this.dir)
+                this.client = new Peer.peerClient(otherSignal, this.socket, this.dir, () => {
+                    this.client = undefined
+                    this.socket.emit("requestStartDocument", this.dir)
+                })
             }
         })
         this.socket.on("startDocument", (confirm) => {
