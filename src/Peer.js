@@ -67,7 +67,7 @@ class peerClient {
     }
 
     send(type, data) {
-        this.peer.send(JSON.stringify({type: type, data: data}))
+        this.peer.send(JSON.stringify({type: type, data: data, time: Date.now()}))
     }
 
     on(type, callback) {
@@ -75,7 +75,7 @@ class peerClient {
     }
 
     setText() {
-        //set this.text to document.text
+        //set this.text => document.text
     }
 
     sendDelta(a, b) {
@@ -123,7 +123,7 @@ class peerServerInstance {
     }
 
     send(type, data) {
-        this.peer.send(JSON.stringify({type: type, data: data}))
+        this.peer.send(JSON.stringify({type: type, data: data, time: Date.now()}))
     }
 
     on(type, callback) {
@@ -145,7 +145,7 @@ class peerServer {
         this.IDs = [this.ID]
         this.strings = {}
         this.strings[this.IDs[0]] = initText
-        this.newConnected = false
+        this.newConnected = true
         this.on("newPatch", (patch) => {
             this.applyPatch(patch)
         })
@@ -158,11 +158,13 @@ class peerServer {
         this.on("test", (data) => {
             console.log(data)
         })
-        this.updateClock()      //init the constant update
+        setTimeout(this.updateClock, 0)      //init the constant update, have to set timeout to spawn its own process (async)
     }
 
     updateClock() {
+        console.log("updating clock")
         this.sendUpdatePatch()
+        console.log("setting timeout")
         setTimeout(this.updateClock, UPDATEINTERVAL)
     }
 
@@ -172,7 +174,7 @@ class peerServer {
         }
         var newClient = new peerServerInstance((thisSignal) => {
             this.socket.emit("generatedSignal", thisSignal)
-            console.log("sending signal")
+            console.log("signal sent")
         }, () => {
             this.destroy(newClient)
         })
@@ -222,11 +224,13 @@ class peerServer {
     }
 
     sendUpdatePatch() {
+        console.log("starting patch gen")
         var oldID = this.ID
         this.ID = uuid.v4()
         this.IDs.push(this.ID)
         this.strings[this.ID] = this.string
         var newPatch = diff.patch_toText(diff.patch_make(this.strings[oldID], this.string, undefined))
+        console.log("sending update patch", newPatch, oldID, this.ID)
         this.send("updatePatch", {patch: newPatch, prevID: oldID, ID: this.ID})
     }
 

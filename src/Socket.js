@@ -26,11 +26,14 @@ class socketClient{
             console.log("start doc", confirm)
             if (confirm == true) {
                 this.isPeerServer = true
+                console.log("making new peerserver")
                 this.server = new Peer.peerServer(this.socket)
+                console.log("made new peerserver")
             } else {
                 this.socket.emit("requestDocument", dir)
                 console.log("requesting doc", dir)
             }
+            console.log("exiting start doc")
         })
         this.socket.on("requestGenerateSignal", () => {
             console.log("got request for signal")

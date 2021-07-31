@@ -1,5 +1,6 @@
 class TreeItem {
     constructor(Tree, parent = undefined) {
+        this.vars = Tree
         this.name = Tree.name
         this.children = []
         this.parent = parent

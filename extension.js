@@ -4,6 +4,7 @@ const TreeData = require("./src/TreeData.js")
 const panels = require("./src/panels.js")
 const git = require("./src/Git.js")
 const Socket = require("./src/Socket.js")
+const { createNoSubstitutionTemplateLiteral } = require('typescript')
 
 var connections = {}
 
@@ -73,10 +74,17 @@ function activate(context) {
 		var editor = vscode.window.activeTextEditor
 		if (editor) {
 			var dir = await git.getGitDir(editor.document.fileName)
-			connections[dir] = new Socket.socketClient("http://localhost:4000", dir, editor)
-			// connections[dir] = new Socket.socketClient(serv.address, dir, editor)
+			if (dir == undefined) {
+				vscode.window.showErrorMessage("No git repo found for file: " + editor.document.fileName)
+			}
+			connections[dir] = new Socket.socketClient("http://localhost:4000", dir, editor)				//for quick debugging
+			// connections[dir] = new Socket.socketClient(serv.vars.address, dir, editor)
 			connections[dir].socket.emit("requestDocument", dir)
 			console.log("requesting doc", dir)
+		}
+		else
+		{
+			vscode.window.showErrorMessage("No editor Found!")
 		}
 	}))
 
